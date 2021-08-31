@@ -40,7 +40,7 @@ class ScoreFragment : Fragment() {
             inflater: LayoutInflater,
             container: ViewGroup?,
             savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         // Inflate view and obtain an instance of the binding class.
         val binding: ScoreFragmentBinding = DataBindingUtil.inflate(
@@ -57,11 +57,20 @@ class ScoreFragment : Fragment() {
         viewModel = ViewModelProvider(this, viewModelFactory)
             .get(ScoreViewModel::class.java)
 
+
+        binding.scoreViewModel = viewModel
+
         viewModel.score.observe(viewLifecycleOwner, Observer { newFinalScore ->
             binding.scoreText.text = newFinalScore.toString()
         })
 
-        binding.playAgainButton.setOnClickListener { onPlayAgain() }
+
+        viewModel.eventPlayAgain.observe(viewLifecycleOwner, Observer { playAgain ->
+            if (playAgain) {
+                onPlayAgain()
+                viewModel.onPlayAgainComplete()
+            }
+        })
 
         return binding.root
     }
